@@ -3,17 +3,17 @@ const ENV_CONFIG = {
   // Development Environment
   development: {
     NODE_SERVER: {
-      BASE_URL: 'http://localhost:5000',
-      API_BASE_URL: 'http://localhost:5000/api',
+      BASE_URL: process.env.REACT_APP_BASE_URL || 'http://localhost:5000',
+      API_BASE_URL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000/api',
     },
-    DEBUG: true,
+    DEBUG: process.env.NODE_ENV !== 'production',
   },
   
   // Production Environment
   production: {
     NODE_SERVER: {
-      BASE_URL: 'https://your-production-server.com',
-      API_BASE_URL: 'https://your-production-server.com/api',
+      BASE_URL: process.env.REACT_APP_BASE_URL || 'https://your-production-server.com',
+      API_BASE_URL: process.env.REACT_APP_API_BASE_URL || 'https://your-production-server.com/api',
     },
     DEBUG: false,
   },
@@ -21,8 +21,8 @@ const ENV_CONFIG = {
   // Staging Environment
   staging: {
     NODE_SERVER: {
-      BASE_URL: 'https://your-staging-server.com',
-      API_BASE_URL: 'https://your-staging-server.com/api',
+      BASE_URL: process.env.REACT_APP_BASE_URL || 'https://your-staging-server.com',
+      API_BASE_URL: process.env.REACT_APP_API_BASE_URL || 'https://your-staging-server.com/api',
     },
     DEBUG: true,
   },
