@@ -20,6 +20,13 @@ import API_CONFIG from "../../config/api.config"
 
 const Products = props => {
   const [products, setProducts] = useState([])
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1
+  })
+  const [loadingMore, setLoadingMore] = useState(false)
   const [cartItems, setCartItems] = useState([])
   const [formData, setFormData] = useState({
     name: "",
@@ -78,18 +85,40 @@ const Products = props => {
     return () => window.removeEventListener('focus', handleFocus)
   }, [searchTerm])
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (page = 1, append = false) => {
     try {
-      setLoading(true)
-      console.log("Fetching products")
-      const data = await getProducts()
-      setProducts(data)
+      if (append) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+      
+      console.log("Fetching products, page:", page);
+      const response = await getProducts(page, pagination.limit);
+      
+      if (append) {
+        setProducts(prevProducts => [...prevProducts, ...response.data]);
+      } else {
+        setProducts(response.data);
+      }
+      
+      setPagination({
+        ...response.pagination,
+        page: parseInt(page)
+      });
     } catch (error) {
-      setError(error.message || 'Failed to load products. Please try again later.')
+      setError(error.message || 'Failed to load products. Please try again later.');
     } finally {
-      setLoading(false)
+      setLoading(false);
+      setLoadingMore(false);
     }
-  }
+  };
+
+  const handleLoadMore = () => {
+    if (pagination.page < pagination.totalPages) {
+      fetchProducts(pagination.page + 1, true);
+    }
+  };
 
   const handleInputChange = e => {
     const { name, value } = e.target
@@ -322,10 +351,24 @@ const Products = props => {
               </Col>
             ))}
           </Row>
+          
+          {/* Load More Button */}
+          {pagination.page < pagination.totalPages && (
+            <div className="text-center mt-4">
+              <Button 
+                color="primary" 
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="btn-lg"
+              >
+                {loadingMore ? 'Loading...' : 'Load More'}
+              </Button>
+            </div>
+          )}
         </Container>
       </div>
     </React.Fragment>
   )
 }
 
-export default connect(null, { setBreadcrumbItems })(Products) 
+export default connect(null, { setBreadcrumbItems })(Products)

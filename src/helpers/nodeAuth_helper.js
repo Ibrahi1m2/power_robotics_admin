@@ -68,9 +68,11 @@ export const registerToNodeServer = async (username, password,email) => {
 };
 
 // Product API functions
-export const getProducts = async () => {
+export const getProducts = async (page = 1, limit = 20) => {
   try {
-    const response = await nodeApi.get(API_CONFIG.ENDPOINTS.PRODUCTS.GET_ALL);
+    const response = await nodeApi.get(API_CONFIG.ENDPOINTS.PRODUCTS.GET_ALL, {
+      params: { page, limit }
+    });
     return response.data;
   } catch (error) {
     throw error.response?.data?.message || 'Failed to fetch products';
